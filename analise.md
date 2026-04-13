@@ -39,3 +39,15 @@ Aparenta ser baixo. A interface visual (front-end) não parece estar "amarrada" 
 
 Separação de responsabilidades:
 Muito boa. A parte visual do cardápio está bem separada da lógica de controle (área administrativa).
+
+Parte 4 - Padrões de Projeto
+1. O sistema aparenta utilizar padrões?
+Sim. Por ser um sistema real em funcionamento, ele provavelmente utiliza padrões de projeto para organizar o código, facilitar a manutenção e evitar bugs.
+
+2 e 3. Onde poderiam existir Factory, Singleton e MVC e onde aplicá-los?
+
+MVC (Model-View-Controller): É o padrão principal que dita a arquitetura. A View é a interface do cardápio que o cliente vê; o Controller é a lógica que processa os cliques (ex: adicionar item); o Model gerencia os dados dos produtos no banco de dados.
+
+Singleton: Poderia ser usado no Carrinho de Compras. Como o usuário só pode ter um carrinho ativo durante a sua sessão de compras, o Singleton garante que o sistema não crie vários carrinhos duplicados para o mesmo cliente.
+
+Factory: Poderia ser usado na Criação de Produtos. Como existem diferentes tipos de itens (Pizzas, Sanduíches, Sucos), uma "ProdutoFactory" no back-end facilitaria a criação correta de cada objeto com seus atributos específicos (ex: pizza tem tamanho, hambúrguer tem ponto da carne).
