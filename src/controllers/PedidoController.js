@@ -1,12 +1,15 @@
 import { PedidoService } from '../services/PedidoService.js';
 import { PedidoView } from '../views/PedidoView.js';
+import { WhatsappService } from '../services/WhatsappService.js'; // Import novo
+import { PedidoRepository } from '../repositories/PedidoRepository.js'; // Import novo
 
 export class PedidoController {
     constructor() {
         this.service = new PedidoService();
         this.view = new PedidoView();
+        this.whatsapp = new WhatsappService(); // Instância do serviço
+        this.repository = PedidoRepository.getInstancia(); // Singleton
 
-        // Inscreve a View para observar as mudanças no Service (Padrão Observer)
         this.service.inscrever((pedidoAtualizado) => {
             this.view.atualizar(pedidoAtualizado);
         });
@@ -18,7 +21,7 @@ export class PedidoController {
 
         try {
             this.service.adicionarItem(produtoEl.value, qtdEl.value);
-            qtdEl.value = ""; // Limpa o input após adicionar
+            qtdEl.value = "";
         } catch (error) {
             this.view.exibirMensagem(error.message);
         }
@@ -31,9 +34,15 @@ export class PedidoController {
         }
 
         const resultado = this.service.finalizarPedido();
-        const mensagem = `Total Original: R$ ${resultado.totalOriginal.toFixed(2)}\nDesconto: R$ ${resultado.desconto.toFixed(2)}\nTaxa: R$ ${resultado.taxa.toFixed(2)}\nTotal Final: R$ ${resultado.totalFinal.toFixed(2)}`;
 
-        this.view.exibirMensagem(mensagem);
+        // 1. Salva no Repositório (Simulando persistência)
+        this.repository.salvar(resultado);
+
+        // 2. Envia via WhatsApp
+        this.whatsapp.enviarPedido(resultado);
+
+        // 3. Limpa a tela
         this.service.limparPedido();
+        this.view.exibirMensagem("Pedido enviado para o WhatsApp!");
     }
 }
