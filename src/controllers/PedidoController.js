@@ -26,23 +26,36 @@ export class PedidoController {
             this.view.exibirMensagem(error.message);
         }
     }
-
     finalizarPedido() {
+        const telClienteInput = document.getElementById("telUsuario");
+        const telEstabelecimentoInput = document.getElementById("telEstabelecimento");
+
+        // Pega os valores e limpa tudo que não for número
+        const telefoneCliente = telClienteInput.value.replace(/\D/g, '');
+        const telefoneEstabelecimento = telEstabelecimentoInput.value.replace(/\D/g, '');
+
+        // Validações antes de enviar
         if (this.service.pedidoAtual.itens.length === 0) {
             this.view.exibirMensagem("Adicione itens antes de finalizar.");
             return;
         }
 
+        if (!telefoneEstabelecimento) {
+            this.view.exibirMensagem("Por favor, digite o número do estabelecimento!");
+            return;
+        }
+
         const resultado = this.service.finalizarPedido();
 
-        // 1. Salva no Repositório (Simulando persistência)
         this.repository.salvar(resultado);
 
-        // 2. Envia via WhatsApp
-        this.whatsapp.enviarPedido(resultado);
+        // Passa os DOIS números para o serviço
+        this.whatsapp.enviarPedido(resultado, telefoneCliente, telefoneEstabelecimento);
 
-        // 3. Limpa a tela
+        // Limpa a tela
         this.service.limparPedido();
-        this.view.exibirMensagem("Pedido enviado para o WhatsApp!");
+        telClienteInput.value = "";
+        telEstabelecimentoInput.value = "";
+        this.view.exibirMensagem("Pedido enviado com sucesso!");
     }
 }
